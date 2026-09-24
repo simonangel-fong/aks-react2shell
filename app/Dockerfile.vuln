@@ -1,0 +1,13 @@
+FROM node:20-slim
+
+WORKDIR /app
+
+# Install the pinned vulnerable dependency tree first (better layer caching).
+COPY react2shell/package.json react2shell/package-lock.json ./
+RUN npm ci
+
+# App source.
+COPY react2shell/ .
+
+EXPOSE 3000
+CMD ["npm", "run", "dev", "--", "-H", "0.0.0.0"]

