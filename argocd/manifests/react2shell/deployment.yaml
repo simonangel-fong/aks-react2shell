@@ -1,0 +1,24 @@
+# Intentionally vulnerable — do NOT harden here (see CLAUDE.md). Hardening is a later phase.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: react2shell
+  namespace: react2shell
+  labels:
+    app: react2shell
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: react2shell
+  template:
+    metadata:
+      labels:
+        app: react2shell
+    spec:
+      containers:
+        - name: react2shell
+          image: ghcr.io/simonangel-fong/react2shell:vuln
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
