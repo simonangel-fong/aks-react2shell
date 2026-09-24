@@ -5,8 +5,8 @@
 - [kind cluster](#kind-cluster)
   - [Steps](#steps)
   - [Create kind](#create-kind)
-  - [argocd and manifest](#argocd-and-manifest)
-  - [create secret](#create-secret)
+  - [Argo CD and Manifests](#argo-cd-and-manifests)
+  - [Create secret](#create-secret)
 
 ---
 
@@ -33,7 +33,9 @@ kubectl get pods -A
 # kind delete cluster --name secure-aks
 ```
 
-## argocd and manifest
+---
+
+## Argo CD and Manifests
 
 GitOps via Argo CD, app-of-apps.
 
@@ -77,9 +79,17 @@ kubectl -n argocd get secret argocd-initial-admin-secret \
   -o jsonpath='{.data.password}' | base64 -d; echo
 ```
 
+- argo cd
+
+![argocd_dashboard](./img/argocd_dashboard.png)
+
+- app
+
+![app_ui](./img/app_ui.png)
+
 ---
 
-## create secret
+## Create secret
 
 | secret            | tier    | type    | ns     | value                     | description                   |
 | ----------------- | ------- | ------- | ------ | ------------------------- | ----------------------------- |
@@ -94,8 +104,11 @@ kubectl -n argocd get secret argocd-initial-admin-secret \
 ```sh
 # confirm
 kubectl get secret -A | grep -E 'secret-(pod|cluster)'
-
+# db            secret-cluster                 Opaque                          1      4m2s
+# harden        secret-pod-harden              Opaque                          1      4m2s
+# vuln          secret-pod-vuln                Opaque                          1      3m28s
 
 # confirm the pod-tier secret
 kubectl -n vuln exec deploy/react2shell -- printenv PWD_SECRET
+# pod-hello-world
 ```
