@@ -1,8 +1,15 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vuln
+---
 # Intentionally vulnerable
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: react2shell-vuln
-  namespace: react2shell
+  name: react2shell
+  namespace: vuln
   labels:
     app: react2shell
 spec:
@@ -28,4 +35,4 @@ spec:
             limits:
               cpu: "500m"
               memory: "512Mi"
-          
+

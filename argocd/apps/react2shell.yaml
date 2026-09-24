@@ -14,7 +14,7 @@ spec:
     path: argocd/manifests/react2shell
   destination:
     server: https://kubernetes.default.svc
-    namespace: react2shell
+    namespace: vuln
   syncPolicy:
     automated:
       prune: true
