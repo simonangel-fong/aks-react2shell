@@ -1,0 +1,14 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: secure-aks
+nodes:
+  - role: control-plane
+    extraPortMappings:
+      - containerPort: 30080   # vulnerable app NodePort -> localhost:8080
+        hostPort: 8080
+        protocol: TCP
+      - containerPort: 30443   # argocd server NodePort -> localhost:8443
+        hostPort: 8443
+        protocol: TCP
+  - role: worker
+  - role: worker
