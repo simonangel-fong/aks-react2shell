@@ -1,2 +1,3 @@
-# secure-aks
-An security project to secure an AKS cluster.
+# React2Shell to AKS
+
+One exploit. Three layers. Stop the spread.
