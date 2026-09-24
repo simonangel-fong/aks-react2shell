@@ -28,6 +28,13 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
+          env:
+            # Pod-tier crown jewel, exposed in the pod environment (RCE-reachable).
+            - name: PWD_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: secret-pod-vuln
+                  key: pwd
           resources:
             requests:
               cpu: "100m"

@@ -6,6 +6,7 @@
   - [Steps](#steps)
   - [Create kind](#create-kind)
   - [argocd and manifest](#argocd-and-manifest)
+  - [create secret](#create-secret)
 
 ---
 
@@ -18,9 +19,6 @@
 | 3   | create secret       | dummy crown jewels        |
 
 ## Create kind
-
-Cluster config: [../kind/kind-config.yaml](../kind/kind-config.yaml)
-(1 control-plane + 2 workers, with host port mappings for the app and Argo CD).
 
 ```sh
 # Create the cluster from the pinned config.
@@ -77,4 +75,27 @@ kubectl apply -n argocd -f argocd/root-app.yaml
 kubectl -n argocd get applications
 kubectl -n argocd get secret argocd-initial-admin-secret \
   -o jsonpath='{.data.password}' | base64 -d; echo
+```
+
+---
+
+## create secret
+
+| secret            | tier    | type    | ns     | value                     | description                   |
+| ----------------- | ------- | ------- | ------ | ------------------------- | ----------------------------- |
+| secret-pod-vuln   | pod     | generic | vuln   | pwd="pod-hello-world"     | secret mounted on pod in ENV; |
+| secret-pod-harden | pod     | generic | harden | pwd="pod-hello-world"     | secret mounted on pod in ENV; |
+| secret-cluster    | cluster | generic | db     | pwd="cluster-hello-world" | secret in different ns;       |
+
+- defer:
+  - host tier sensitive data
+  - cloud tier sensitive data
+
+```sh
+# confirm
+kubectl get secret -A | grep -E 'secret-(pod|cluster)'
+
+
+# confirm the pod-tier secret
+kubectl -n vuln exec deploy/react2shell -- printenv PWD_SECRET
 ```
