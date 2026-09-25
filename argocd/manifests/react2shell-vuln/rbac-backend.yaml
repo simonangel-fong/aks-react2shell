@@ -1,0 +1,35 @@
+# Intentional misconfiguration (backend tier).
+# The leftover backend pod runs as this SA. Its ClusterRole is cluster-wide,
+# so from that pod the attacker can read Secrets in ANY namespace -> db crown jewel.
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: backend
+  namespace: vuln
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: backend
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "configmaps", "secrets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch"]
+---
+# Cluster-wide binding: backend SA can read secrets in every namespace, incl. db.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: backend
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: backend
+subjects:
+  - kind: ServiceAccount
+    name: backend
+    namespace: vuln

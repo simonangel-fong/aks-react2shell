@@ -22,6 +22,8 @@ spec:
       labels:
         app: react2shell
     spec:
+      # Intentional misconfig: pod runs as the frontend SA, so RCE yields its token.
+      serviceAccountName: frontend
       containers:
         - name: react2shell
           image: simonangelfong/react2shell:vuln

@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: https://github.com/simonangel-fong/secure-aks.git
     targetRevision: master
-    path: argocd/manifests/react2shell
+    path: argocd/manifests/react2shell-vuln
   destination:
     server: https://kubernetes.default.svc
     namespace: vuln

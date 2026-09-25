@@ -51,10 +51,8 @@ python poc.py http://localhost:3000 calc
 The container runs `next dev`, which is required for the exploit to work.
 
 ```sh
-cd app
-
 # build the image
-docker build -f Dockerfile.vuln -t react2shell:vuln .
+docker build -f app/Dockerfile.vuln -t react2shell:vuln app
 
 # run
 docker run --rm -d --name react2shell -p 3000:3000 react2shell:vuln
@@ -96,7 +94,7 @@ docker rm react2shell -f
 # build
 docker build -f app/Dockerfile.vuln -t simonangelfong/react2shell:vuln app
 
-docker login -u
+docker login
 # push
 docker push simonangelfong/react2shell:vuln
 

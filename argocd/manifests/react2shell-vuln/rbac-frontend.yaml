@@ -1,0 +1,36 @@
+# Intentional misconfiguration (frontend tier).
+# The react2shell pod runs as this SA. Its token (stolen via RCE) can enumerate
+# and exec into workloads in the vuln ns -> pivot to the leftover backend pod.
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: frontend
+  namespace: vuln
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: frontend
+  namespace: vuln
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "pods/exec"]
+    verbs: ["get", "list", "watch", "create"]   # create on pods/exec = the exec capability
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: frontend
+  namespace: vuln
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: frontend
+subjects:
+  - kind: ServiceAccount
+    name: frontend
+    namespace: vuln

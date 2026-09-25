@@ -62,7 +62,7 @@ helm install argocd argo/argo-cd --namespace argocd --create-namespace
 # get pwd
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 --decode; echo
 # port forward
-kubectl port-forward service/argocd-server -n argocd 8080:443
+kubectl port-forward service/argocd-server -n argocd 8000:443
 
 # ##############################
 # deploy app-of-apps
@@ -73,7 +73,7 @@ git push
 
 kubectl apply -n argocd -f argocd/root-app.yaml
 
-# Verify + get UI login (user: admin, URL: http://localhost:8443).
+# Verify
 kubectl -n argocd get applications
 kubectl -n argocd get secret argocd-initial-admin-secret \
   -o jsonpath='{.data.password}' | base64 -d; echo

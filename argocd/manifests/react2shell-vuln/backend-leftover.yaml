@@ -1,0 +1,16 @@
+# Intentional misconfiguration: a forgotten "leftover" pod running as the
+# over-privileged backend SA. The pivot target of the attack chain.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: backend-leftover
+  namespace: vuln
+  labels:
+    app: backend-leftover
+spec:
+  serviceAccountName: backend
+  containers:
+    - name: nginx
+      image: nginx:latest
+      ports:
+        - containerPort: 80

